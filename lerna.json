@@ -3,7 +3,8 @@
     "packages/cli",
     "packages/core",
     "packages/boa",
-    "packages/plugins/**/*"
+    "packages/plugins/**/*",
+    "packages/ml-library/**/*"
   ],
   "version": "independent",
   "npmClient": "npm",
