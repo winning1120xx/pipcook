@@ -1,23 +1,29 @@
 import { ImageDataset, ModelTrainType, UniModel, ModelTrainArgsType, ImageDataLoader } from '@pipcook/pipcook-core';
+import * as path from 'path';
 
 const boa = require('@pipcook/boa');
 const { tuple } = boa.builtins();
 const tf = boa.import('tensorflow');
-const AUTOTUNE = tf.data.experimental.AUTOTUNE;
+
+const config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = true
+const session = tf.compat.v1.InteractiveSession(boa.kwargs({
+  config:config
+}))
+
+
+const AUTOTUNE = tf.data.experimental.AUTOTUNE
+
+const sys = boa.import('sys');
+
+sys.path.append('/home/rickycao/Documents/work/pipcook/pipcook/packages/plugins/model-train/image-classification-tensorflow-model-train/piploadlib');
+const loadImage = boa.import('loadimage')
 
 interface TrainConfig {
   epochs: number;
   steps_per_epoch: number;
   validation_data?: any;
   validation_steps?: number;
-}
-
-function loadImage(path: string) {
-  let image = tf.io.read_file(path);
-  image = tf.image.decode_jpeg(image, boa.kwargs({
-    channels: 3
-  }));
-  return image;
 }
 
 async function createDataset(dataLoader: ImageDataLoader, labelMap: Record<string, number>) {
@@ -29,14 +35,15 @@ async function createDataset(dataLoader: ImageDataLoader, labelMap: Record<strin
     imageNames.push(currentData.data);
     labels.push(tf.one_hot(currentData.label.categoryId, Object.keys(labelMap).length));
   }
-  console.log(imageNames);
   const pathDs = tf.data.Dataset.from_tensor_slices(imageNames);
-  const imageDs = pathDs.map(loadImage, boa.kwargs({
+  const imageDs = pathDs.map(loadImage.loadImage, boa.kwargs({
     num_parallel_calls: AUTOTUNE
   }));
+  console.log(1111123, imageDs.take(1));
   const labelDs = tf.data.Dataset.from_tensor_slices(labels);
   const imageLabelDs = tf.data.Dataset.zip(tuple([ imageDs, labelDs ]));
   return imageLabelDs;
+
 }
 
 /**
@@ -85,7 +92,8 @@ const ModelTrain: ModelTrainType = async (data: ImageDataset, model: UniModel, a
     await trainModel.fit(trainDataSet, boa.kwargs(trainConfig));
 
     await saveModel(async (modelPath: string) => {
-      await trainModel.save_weights(modelPath);
+      console.log(modelPath);
+      await trainModel.save_weights(path.join(modelPath, 'weights.h5'));
     });
 
     const result: UniModel = {

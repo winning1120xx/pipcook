@@ -22,7 +22,8 @@ export const start: StartHandler = async (filename: string) => {
   const child = fork(script, [ filename ], {
     cwd: process.cwd(),
     env: {
-      NODE_PATH: path.join(process.cwd(), 'node_modules')
+      NODE_PATH: path.join(process.cwd(), 'node_modules'),
+      LD_LIBRARY_PATH: '/usr/lib/x86_64-linux-gpu:/usr/local/cuda/lib64'
     },
     stdio: 'inherit'
   });

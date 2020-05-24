@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@types/jasmine": "^3.5.10",
+    "glob": "^7.1.6",
+    "glob-promise": "^3.4.0",
     "jasmine": "^3.5.0"
   }
 }
