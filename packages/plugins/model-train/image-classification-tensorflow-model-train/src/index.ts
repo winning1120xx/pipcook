@@ -16,7 +16,7 @@ const AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 const sys = boa.import('sys');
 
-sys.path.append('/home/rickycao/Documents/work/pipcook/pipcook/packages/plugins/model-train/image-classification-tensorflow-model-train/piploadlib');
+sys.path.append(path.join(__dirname, '..', 'piploadlib'));
 const loadImage = boa.import('loadimage')
 
 interface TrainConfig {
