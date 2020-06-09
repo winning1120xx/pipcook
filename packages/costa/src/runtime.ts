@@ -191,7 +191,7 @@ export class CostaRuntime {
 
       for (let name of requirements) {
         debug(`installing python package ${name.split(' ')[0]}`);
-        let args = [ 'install', name ];
+        let args = [ 'install', name.split(' ')[0] ];
         if (pyIndex) {
           args = args.concat([ '-i', pyIndex ]);
         }
