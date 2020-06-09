@@ -190,12 +190,15 @@ export class CostaRuntime {
       // TODO(yorkie): check for access(pip3)
 
       for (let name of requirements) {
-        debug(`installing python package ${name}`);
+        debug(`installing python package ${name.split(' ')[0]}`);
         let args = [ 'install', name ];
         if (pyIndex) {
           args = args.concat([ '-i', pyIndex ]);
         }
-        args = args.concat(['--default-timeout=1000'])
+        if (name.split(' ').slice(1).length > 0) {
+          args = args.concat(name.split(' ').slice(1))
+        }
+        args = args.concat(['--default-timeout=1000']);
         await spawnAsync(`${envDir}/bin/pip3`, args);
       }
     } else {
