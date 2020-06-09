@@ -39,7 +39,7 @@ export interface CondaConfig {
   /**
    * The Python third-party dependencies.
    */
-  dependencies?: Record<string, string>;
+  dependencies?: Record<string, string | {darwin?: string, linux?: string}>;
 }
 
 /**

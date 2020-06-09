@@ -2,6 +2,7 @@ import path from 'path';
 import url from 'url';
 import { ensureDir, ensureDirSync, pathExists, remove, writeFile, readFile, access, ensureSymlink } from 'fs-extra';
 import { spawn, SpawnOptions } from 'child_process';
+import * as os from 'os';
 import { PluginRunnable, BootstrapArg } from './runnable';
 import {
   NpmPackageMetadata,
@@ -51,7 +52,11 @@ function spawnAsync(command: string, args?: string[], opts: SpawnOptions = {}): 
 function createRequirements(name: string, config: CondaConfig): string[] {
   const deps = [];
   for (let k in config.dependencies) {
-    const v = config.dependencies[k];
+    let v = config.dependencies[k];
+    if (typeof v === 'object') {
+      const platform = os.platform();
+      v = platform === 'darwin' ? v[platform] : v['linux'];
+    }
     if (v === '*') {
       deps.push(k);
     } else if (v.startsWith('git+https://') === true) {
