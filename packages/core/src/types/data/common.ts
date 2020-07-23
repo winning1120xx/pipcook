@@ -25,6 +25,8 @@ export interface Metadata extends Record<string, any> {
    * The label maps for a dataset, which is the available list for corresponding labels.
    */
   labelMap?: Record<string, number> | string[];
+
+  corpus?: Set<string>;
 }
 
 /**

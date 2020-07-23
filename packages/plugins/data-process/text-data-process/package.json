@@ -1,38 +1,25 @@
 {
-  "name": "@pipcook/plugins-csv-data-access",
+  "name": "@pipcook/plugins-text-data-process",
   "version": "1.0.3",
   "description": "",
   "main": "dist/index",
   "types": "dist/index",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json"
   },
-  "author": "",
+  "author": "WenheLI <wl1508@nyu.edu>",
   "license": "ISC",
   "dependencies": {
-    "@pipcook/pipcook-core": "^1.0.3",
-    "csv-parse": "^4.8.8",
-    "glob": "^7.1.6",
-    "glob-promise": "^3.4.0",
-    "shortid": "^2.2.15"
-  },
-  "gitHead": "53e131a069b3112a74ae5d99aa1ab08bec768c7e",
-  "devDependencies": {
-    "@types/jasmine": "^3.5.7",
-    "@types/shortid": "^0.0.29",
-    "nyc": "14.1.1"
+    "@pipcook/pipcook-core": "^1.0.3"
   },
   "publishConfig": {
     "access": "public"
   },
   "pipcook": {
-    "category": "dataAccess",
+    "category": "dataProcess",
     "datatype": "text"
   },
   "conda": {
@@ -42,3 +29,4 @@
     }
   }
 }
+

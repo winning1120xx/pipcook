@@ -7,6 +7,11 @@ import { ArgsType, CsvDataLoader, CsvDataset, CsvSample, DataAccessType } from '
 import * as fs from 'fs';
 import * as path from 'path';
 import parse from 'csv-parse/lib/sync';
+import { MakeWordsSet } from './scripts';
+
+
+const boa = require('@pipcook/boa');
+const jieba = boa.import('jieba');
 
 class DataLoader implements CsvDataLoader {
   records!: CsvSample[];
@@ -40,6 +45,8 @@ class DataLoader implements CsvDataLoader {
  */
 const csvDataAccess: DataAccessType = async (args: ArgsType): Promise<CsvDataset> => {
   const {
+    getCorpus = false,
+    stopwordsPath = "",
     dataDir,
     labelColumn
   } = args;
@@ -54,15 +61,34 @@ const csvDataAccess: DataAccessType = async (args: ArgsType): Promise<CsvDataset
     testCsvPath: path.join(dataDir, 'test.csv')
   };
 
+  const corpus: Set<string> = new Set();
+
+  let stopwordsSet: Set<string>;
+
+  if (stopwordsPath) {
+    stopwordsSet = await MakeWordsSet(stopwordsPath);
+  }
+
+  const addToCorpus = (loader: DataLoader) => {
+    for (const r of loader.records) {
+      for (const word of jieba.cut(r.data, boa.kwargs({cut_all: false}))) {
+        if (!stopwordsSet.has(word)) corpus.add(word);
+      }
+    }
+  }
+
   const names: string[] = [];
   if (fs.existsSync(path.join(dataDir, 'train.csv')) && labelColumn) {
     data.trainLoader = new DataLoader(path.join(dataDir, 'train.csv'), labelColumn);
+    if (getCorpus) addToCorpus(data.trainLoader);
   }
   if (fs.existsSync(path.join(dataDir, 'validation.csv')) && labelColumn) {
     data.validationLoader = new DataLoader(path.join(dataDir, 'validation.csv'), labelColumn);
+    if (getCorpus) addToCorpus(data.validationLoader);
   }
   if (fs.existsSync(path.join(dataDir, 'test.csv')) && labelColumn) {
     data.testLoader = new DataLoader(path.join(dataDir, 'test.csv'), labelColumn);
+    if (getCorpus) addToCorpus(data.testLoader);
   }
 
   const loader = data.trainLoader || data.validationLoader || data.testLoader;
@@ -77,6 +103,7 @@ const csvDataAccess: DataAccessType = async (args: ArgsType): Promise<CsvDataset
   const result: CsvDataset = {
     ...data,
     metadata: {
+      corpus,
       feature: {
         names
       }
