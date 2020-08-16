@@ -29,8 +29,16 @@ const ModelEvaluate: ModelEvaluateType = async (data: ImageDataset, model: UniMo
       const xs = tf.stack(dataBatch.map((ele) => ele.data));
       const ys = tf.stack(dataBatch.map((ele) => ele.label));
       const evaluateRes = await model.model.evaluate(xs, ys);
-      loss += Number(evaluateRes[0].numpy());
-      accuracy += Number(evaluateRes[1].numpy());
+      if (typeof evaluateRes[0] === 'number') {
+        loss += evaluateRes[0];  
+      } else {
+        loss += Number(evaluateRes[0].numpy());
+      }
+      if (typeof evaluateRes[1] === 'number') {
+        accuracy += evaluateRes[1];
+      } else {
+        accuracy += Number(evaluateRes[1].numpy());
+      }
     }
 
     loss /= batches;

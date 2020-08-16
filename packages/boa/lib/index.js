@@ -80,7 +80,10 @@ function copy(T) {
 function dump(T) {
   return pyInst.import('json')
     .__getattr__('dumps')
-    .invoke(asHandleObject(T));
+    .invoke(asHandleObject(T), {
+      default: builtins.__getitem__('str'),
+      [native.NODE_PYTHON_KWARGS_NAME]: true,
+    });
 }
 
 function getDelegator(type) {
@@ -394,6 +397,7 @@ function _internalWrap(T, src={}) {
       return r !== -1;
     },
     'apply'(target, thisArg, argumentsList) {
+      console.log('-===', target, argumentsList)
       return wrap(target.invoke(argumentsList));
     },
     'construct'(target, argumentsList, newClass) {
