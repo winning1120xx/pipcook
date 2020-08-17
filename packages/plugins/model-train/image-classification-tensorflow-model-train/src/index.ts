@@ -5,6 +5,10 @@ import * as fs from 'fs-extra';
 const boa = require('@pipcook/boa');
 const tf = boa.import('tensorflow');
 
+const sys = boa.import('sys');
+sys.path.insert(0, path.join(__dirname, '..'));
+const { train, evaluate } = boa.import('pyscript.index');
+
 const config = tf.compat.v1.ConfigProto();
 config.gpu_options.allow_growth = true;
 tf.compat.v1.InteractiveSession(boa.kwargs({
@@ -38,22 +42,14 @@ const ModelTrain: ModelTrainType = async (data: ImageDataset, model: UniModel, a
       console.log(`Epoch ${i}/${epochs} start`);
       for (let j = 0; j < batchesPerEpoch; j++) {
         const dataBatch = await data.trainLoader.nextBatch(batchSize);
-        const xs = tf.stack(dataBatch.map((ele) => ele.data));
-        const ys = tf.stack(dataBatch.map((ele) => ele.label));
-        const trainRes = await trainModel.train_on_batch(xs, ys);
-        if (j % (Math.floor(batchesPerEpoch / 10)) === 0) {
-          console.log(`Iteration ${j}/${batchesPerEpoch} result --- loss: ${trainRes[0]} accuracy: ${trainRes[1]}`);
-        }
+        train(dataBatch.map((ele) => ele.data), dataBatch.map((ele) => ele.label), trainModel, j, batchesPerEpoch)
       }
       let loss = 0;
       let accuracy = 0;
       for (let j = 0; j < valBatchesPerEpoch; j++) {
         const dataBatch = await validationLoader.nextBatch(batchSize);
-        const xs = tf.stack(dataBatch.map((ele) => ele.data));
-        const ys = tf.stack(dataBatch.map((ele) => ele.label));
-        const evaluateRes = await trainModel.evaluate(xs, ys, boa.kwargs({
-          verbose: 0
-        }));
+        const evaluateRes = evaluate(dataBatch.map((ele) => ele.data), dataBatch.map((ele) => ele.label), trainModel)
+        
         if (typeof evaluateRes[0] === 'number') {
           loss += evaluateRes[0];  
         } else {
@@ -69,7 +65,6 @@ const ModelTrain: ModelTrainType = async (data: ImageDataset, model: UniModel, a
       accuracy /= valBatchesPerEpoch;
       console.log(`Validation Result ${i}/${epochs} result --- loss: ${loss} accuracy: ${accuracy}`);
     }
-
 
     await fs.ensureDir(modelPath);
     await trainModel.save_weights(path.join(modelPath, 'weights.h5'));

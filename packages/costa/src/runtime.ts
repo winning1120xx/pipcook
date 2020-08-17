@@ -296,7 +296,8 @@ export class CostaRuntime {
     await new Promise((resolve, reject) => {
       const writeStream = createWriteStream(filename);
       stream.pipe(writeStream);
-      stream.on('end', resolve);
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
       stream.on('error', reject);
     });
     const pkg = await fetchPackageJsonFromTarball(filename);

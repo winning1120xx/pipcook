@@ -1,7 +1,12 @@
 import { ImageDataset, ModelEvaluateType, UniModel, EvaluateResult } from '@pipcook/pipcook-core';
+import * as path from 'path';
 
 const boa = require('@pipcook/boa');
 const tf = boa.import('tensorflow');
+
+const sys = boa.import('sys');
+sys.path.insert(0, path.join(__dirname, '..'));
+const { evaluate } = boa.import('pyscript.index');
 
 /**
  * this is plugin used to train tfjs model with pascal voc data format for image classification problem.
@@ -26,9 +31,7 @@ const ModelEvaluate: ModelEvaluateType = async (data: ImageDataset, model: UniMo
 
     for (let i = 0; i < batches; i++) {
       const dataBatch = await data.testLoader.nextBatch(batchSize);
-      const xs = tf.stack(dataBatch.map((ele) => ele.data));
-      const ys = tf.stack(dataBatch.map((ele) => ele.label));
-      const evaluateRes = await model.model.evaluate(xs, ys);
+      const evaluateRes = evaluate(dataBatch.map((ele) => ele.data), dataBatch.map((ele) => ele.label), model.model)
       if (typeof evaluateRes[0] === 'number') {
         loss += evaluateRes[0];  
       } else {
