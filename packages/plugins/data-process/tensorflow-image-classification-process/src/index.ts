@@ -2,7 +2,6 @@ import { DataProcessType, Metadata, ArgsType, ImageSample, Sample } from '@pipco
 
 const boa = require('@pipcook/boa');
 const tf = boa.import('tensorflow');
-tf.debugging.set_log_device_placement(true)
 const config = tf.compat.v1.ConfigProto();
 config.gpu_options.allow_growth = true;
 tf.compat.v1.InteractiveSession(boa.kwargs({

@@ -1,0 +1,27 @@
+{
+  "plugins": {
+    "dataCollect": {
+      "package": "https://registry.npm.alibaba-inc.com/@ali/plugins-cr-faas-data-collect/download/@ali/plugins-cr-faas-data-collect-0.0.6.tgz",
+      "params": {
+        "modelId": "data_base",
+        "url": "https://dev.g.alicdn.com/i-front-end/cr-mock/0.0.3/index.html#/data_base",
+        "totalNum": 100
+      }
+    },
+    "dataAccess": {
+      "package": "./packages/plugins/data-access/coco-data-access"
+    },
+    "modelDefine": {
+      "package": "./packages/plugins/model-define/detectron-fasterrcnn-model-define"
+    },
+    "modelTrain": {
+      "package": "./packages/plugins/model-train/detectron-model-train",
+      "params": {
+        "steps": 1
+      }
+    },
+    "modelEvaluate": {
+      "package": "./packages/plugins/model-evaluate/detectron-model-evaluate"
+    }
+  }
+}

@@ -116,12 +116,14 @@ Napi::Value PythonObject::Invoke(const CallbackInfo &info) {
     }
   }
 
+  PyObject *args_ = args.release().ptr();
+
   // Resize the args length by the variable `counter`.
-  _PyTuple_Resize(&args.ptr(), (Py_ssize_t)counter);
+  _PyTuple_Resize(&args_, (Py_ssize_t)counter);
 
   // Invoke this function
   try {
-    PyObject *result = PyObject_Call(_self.ptr(), args.ptr(), kwargs);
+    PyObject *result = PyObject_Call(_self.ptr(), args_, kwargs);
     if (!result)
       throw pybind::error_already_set();
     return PythonObject::NewInstance(
