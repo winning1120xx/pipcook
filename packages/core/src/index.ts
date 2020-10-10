@@ -42,7 +42,7 @@ export {
   PipcookPlugin,
   PluginStatus
 } from './types/plugins';
-export { EvaluateResult } from './types/other';
+export { EvaluateResult, EvaluateResultItem } from './types/other';
 
 export {
   createAnnotationFile,

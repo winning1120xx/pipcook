@@ -11,7 +11,8 @@ import {
   UniDataset,
   constants as CoreConstants,
   PluginStatus,
-  PluginTypeI
+  PluginTypeI,
+  EvaluateResultItem
 } from '@pipcook/pipcook-core';
 import { PluginPackage, RunnableResponse, PluginRunnable } from '@pipcook/costa';
 import { PipelineModel, PipelineEntity, QueryOptions } from '../model/pipeline';
@@ -260,7 +261,7 @@ export class PipelineService {
         job.dataset = JSON.stringify(datasetVal.metadata);
       }
       job.evaluateMap = JSON.stringify(result);
-      job.evaluatePass = result?.evaluateResult?.pass || result?.pass;
+      job.evaluatePass = result?.test?.pass || (result as EvaluateResultItem)?.pass;
       job.endTime = Date.now();
       job.status = PipelineStatus.SUCCESS;
 

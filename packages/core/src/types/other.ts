@@ -8,11 +8,13 @@ export interface EvaluateResultItem {
   [key: string]: any;
 }
 
-export interface EvaluateResult {
-  trainResult?: EvaluateResultItem;
-  evaluateResult?: EvaluateResultItem;
-  testResult?: EvaluateResultItem;
+export interface EvaluateResultDataset {
+  train?: EvaluateResultItem;
+  validate?: EvaluateResultItem;
+  test?: EvaluateResultItem;
 }
+
+export type EvaluateResult = EvaluateResultItem | EvaluateResultDataset;
 
 export class EvaluateError extends TypeError {
   public result: EvaluateResult;
