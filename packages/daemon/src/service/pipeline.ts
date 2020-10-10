@@ -197,6 +197,7 @@ export class PipelineService {
     job.status = PipelineStatus.RUNNING;
     this.saveJob(job);
     dispatchJobEvent(PipelineStatus.RUNNING);
+    let tempDataDir: null | string = null;
     try {
       verifyPlugin('dataCollect');
       const dataDir = path.join(this.pluginManager.datasetRoot, `${plugins.dataCollect.plugin.name}@${plugins.dataCollect.plugin.version}`);
@@ -210,9 +211,14 @@ export class PipelineService {
         dataDir
       }));
 
+      // create temp dir to use for data-access folder
+      tempDataDir = path.join(CoreConstants.PIPCOOK_TMPDIR, job.id);
+      await fs.ensureDir(tempDataDir);
+      await fs.copy(dataDir, tempDataDir);
+
       verifyPlugin('dataAccess');
       const dataset = await run('dataAccess', getParams(plugins.dataAccess.params, {
-        dataDir
+        dataDir: tempDataDir
       }));
 
       let datasetProcess: PluginPackage;
@@ -287,6 +293,9 @@ export class PipelineService {
       }
       throw err;
     } finally {
+      if (tempDataDir) {
+        await fs.remove(tempDataDir);
+      }
       await runnable.destroy();
       delete this.runnableMap[job.id];
     }
