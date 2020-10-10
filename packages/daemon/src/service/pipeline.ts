@@ -260,7 +260,7 @@ export class PipelineService {
         job.dataset = JSON.stringify(datasetVal.metadata);
       }
       job.evaluateMap = JSON.stringify(result);
-      job.evaluatePass = result.pass;
+      job.evaluatePass = result?.evaluateResult?.pass;
       job.endTime = Date.now();
       job.status = PipelineStatus.SUCCESS;
 

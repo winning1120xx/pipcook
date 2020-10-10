@@ -3,9 +3,15 @@ export interface Statistic {
   metricValue: number;
 }
 
-export interface EvaluateResult {
+export interface EvaluateResultItem {
   pass?: boolean;
   [key: string]: any;
+}
+
+export interface EvaluateResult {
+  trainResult?: EvaluateResultItem;
+  evaluateResult?: EvaluateResultItem;
+  testResult?: EvaluateResultItem;
 }
 
 export class EvaluateError extends TypeError {
