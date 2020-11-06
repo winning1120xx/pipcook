@@ -212,7 +212,7 @@ export class PipelineService {
       }));
 
       // create temp dir to use for data-access folder
-      tempDataDir = path.join(CoreConstants.PIPCOOK_TMPDIR, job.id);
+      tempDataDir = path.join(runnable.workingDir, 'tmpdata');
       await fs.ensureDir(tempDataDir);
       await fs.copy(dataDir, tempDataDir);
 
